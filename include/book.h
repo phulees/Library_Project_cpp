@@ -31,4 +31,9 @@ public:
     bool setYear(int year);
     bool setTotalCopies(int totalCopies);
     bool setAvailableCopies(int availableCopies);
+
+    bool borrowBook(); // Mượn sách availableCopies -1
+    bool returnBook(); // Trả sách availableCopies +1
+
+    void displayInfo() const;
 };
