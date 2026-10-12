@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <iostream>
+#include <string>
 
 class Book
 {
@@ -10,14 +10,14 @@ private:
     std::string title;
     std::string author;
     int year;
-    int totalCopies;    // Tổng số bản sao (bao gồm cả sách cho mượn), chỉ thay đổi khi nhập kho hoặc tiêu hủy
-    int availableCopies;    // Số bản sao khả dụng / còn lại
+    int totalCopies;
+    int availableCopies;
 
 public:
     Book();
     Book(int id, const std::string& title, const std::string& author,
          int year, int totalCopies, int availableCopies);
-    ~Book();
+    ~Book() = default;
 
     int getId() const;
     const std::string& getTitle() const;
@@ -33,8 +33,8 @@ public:
     bool setTotalCopies(int totalCopies);
     bool setAvailableCopies(int availableCopies);
 
-    bool borrowBook(); // Mượn sách availableCopies -1
-    bool returnBook(); // Trả sách availableCopies +1
-
+    bool isValid() const;
+    bool borrowBook();
+    bool returnBook();
     void displayInfo() const;
 };
