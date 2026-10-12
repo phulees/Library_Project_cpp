@@ -46,6 +46,7 @@ int main()
     while (true) {
         showMenu();
         const int choice = readInt("Chon chuc nang: ");
+        if (!std::cin) break;
         if (choice == 0) { std::cout << "Da thoat chuong trinh.\n"; break; }
         switch (choice) {
         case 1: {
