@@ -66,3 +66,27 @@ bool Book::setAvailableCopies(int availableCopies)
     this->availableCopies = availableCopies;
     return true;
 }
+
+bool Book::borrowBook() {
+    if (getAvailableCopies() <= 0) return false;
+    availableCopies--;
+    return true;
+}
+
+bool Book::returnBook() {
+    if (getAvailableCopies() < getTotalCopies()) {
+        availableCopies++;
+        return true;
+    }
+    return false;
+}
+
+void Book::displayInfo() const
+{
+    std::cout << "ID: " << id << '\n'
+              << "Title: " << title << '\n'
+              << "Author: " << author << '\n'
+              << "Year: " << year << '\n'
+              << "Total copies: " << totalCopies << '\n'
+              << "Available copies: " << availableCopies << '\n';
+}
