@@ -1,93 +1,59 @@
 #include "book.h"
 
-Book::Book()
-    : id(0), year(0), totalCopies(0), availableCopies(0)
+#include <stdexcept>
+#include <utility>
+
+namespace
+{
+bool isBlank(const std::string& value)
+{
+    return value.find_first_not_of(" \t\r\n") == std::string::npos;
+}
+}
+
+Book::Book(Id id, std::string title, std::string author, int year, int totalCopies)
+    : Book(id, std::move(title), std::move(author), year, totalCopies, totalCopies)
 {
 }
 
-Book::Book(int id, const std::string& title, const std::string& author,
-           int year, int totalCopies, int availableCopies)
-    : id(id), title(title), author(author), year(year),
-      totalCopies(totalCopies), availableCopies(availableCopies)
+Book::Book(Id id, std::string title, std::string author, int year,
+           int totalCopies, int availableCopies)
+    : id_(id),
+      title_(std::move(title)),
+      author_(std::move(author)),
+      year_(year),
+      totalCopies_(totalCopies),
+      availableCopies_(availableCopies)
 {
+    if (id_ <= 0) throw std::invalid_argument("Book ID must be positive.");
+    if (isBlank(title_)) throw std::invalid_argument("Book title cannot be blank.");
+    if (isBlank(author_)) throw std::invalid_argument("Book author cannot be blank.");
+    if (year_ < 1000) throw std::invalid_argument("Publication year must be at least 1000.");
+    if (totalCopies_ <= 0) throw std::invalid_argument("Total copies must be positive.");
+    if (availableCopies_ < 0 || availableCopies_ > totalCopies_) {
+        throw std::invalid_argument("Available copies must be between zero and total copies.");
+    }
 }
 
-int Book::getId() const { return id; }
-const std::string& Book::getTitle() const { return title; }
-const std::string& Book::getAuthor() const { return author; }
-int Book::getYear() const { return year; }
-int Book::getTotalCopies() const { return totalCopies; }
-int Book::getAvailableCopies() const { return availableCopies; }
+Book::Id Book::id() const noexcept { return id_; }
+const std::string& Book::title() const noexcept { return title_; }
+const std::string& Book::author() const noexcept { return author_; }
+int Book::year() const noexcept { return year_; }
+int Book::totalCopies() const noexcept { return totalCopies_; }
+int Book::availableCopies() const noexcept { return availableCopies_; }
+int Book::borrowedCopies() const noexcept { return totalCopies_ - availableCopies_; }
+bool Book::canBeBorrowed() const noexcept { return availableCopies_ > 0; }
 
-bool Book::setId(int id)
+bool Book::checkout() noexcept
 {
-    if (id <= 0) return false;
-    this->id = id;
+    if (!canBeBorrowed()) return false;
+    --availableCopies_;
     return true;
 }
 
-bool Book::setTitle(const std::string& title)
+bool Book::checkin() noexcept
 {
-    if (title.empty()) return false;
-    this->title = title;
+    if (availableCopies_ >= totalCopies_) return false;
+    ++availableCopies_;
     return true;
-}
-
-bool Book::setAuthor(const std::string& author)
-{
-    if (author.empty()) return false;
-    this->author = author;
-    return true;
-}
-
-bool Book::setYear(int year)
-{
-    if (year < 1000) return false;
-    this->year = year;
-    return true;
-}
-
-bool Book::setTotalCopies(int totalCopies)
-{
-    if (totalCopies < 1 || totalCopies < availableCopies) return false;
-    this->totalCopies = totalCopies;
-    return true;
-}
-
-bool Book::setAvailableCopies(int availableCopies)
-{
-    if (availableCopies < 0 || availableCopies > totalCopies) return false;
-    this->availableCopies = availableCopies;
-    return true;
-}
-
-bool Book::isValid() const
-{
-    return id > 0 && !title.empty() && !author.empty() &&
-           year >= 1000 && totalCopies > 0 &&
-           availableCopies >= 0 && availableCopies <= totalCopies;
-}
-
-bool Book::borrowBook()
-{
-    if (availableCopies <= 0) return false;
-    --availableCopies;
-    return true;
-}
-
-bool Book::returnBook()
-{
-    if (availableCopies >= totalCopies) return false;
-    ++availableCopies;
-    return true;
-}
-
-void Book::displayInfo() const
-{
-    std::cout << "Ma sach: " << id << '\n'
-              << "Ten sach: " << title << '\n'
-              << "Tac gia: " << author << '\n'
-              << "Nam xuat ban: " << year << '\n'
-              << "Tong so ban: " << totalCopies << '\n'
-              << "So ban con: " << availableCopies << '\n';
 }

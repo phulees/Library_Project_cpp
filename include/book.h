@@ -1,40 +1,32 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 
-class Book
+class Book final
 {
-private:
-    int id;
-    std::string title;
-    std::string author;
-    int year;
-    int totalCopies;
-    int availableCopies;
-
 public:
-    Book();
-    Book(int id, const std::string& title, const std::string& author,
-         int year, int totalCopies, int availableCopies);
-    ~Book() = default;
+    using Id = int;
 
-    int getId() const;
-    const std::string& getTitle() const;
-    const std::string& getAuthor() const;
-    int getYear() const;
-    int getTotalCopies() const;
-    int getAvailableCopies() const;
+    Book(Id id, std::string title, std::string author, int year, int totalCopies);
+    Book(Id id, std::string title, std::string author, int year,
+         int totalCopies, int availableCopies);
 
-    bool setId(int id);
-    bool setTitle(const std::string& title);
-    bool setAuthor(const std::string& author);
-    bool setYear(int year);
-    bool setTotalCopies(int totalCopies);
-    bool setAvailableCopies(int availableCopies);
+    [[nodiscard]] Id id() const noexcept;
+    [[nodiscard]] const std::string& title() const noexcept;
+    [[nodiscard]] const std::string& author() const noexcept;
+    [[nodiscard]] int year() const noexcept;
+    [[nodiscard]] int totalCopies() const noexcept;
+    [[nodiscard]] int availableCopies() const noexcept;
+    [[nodiscard]] int borrowedCopies() const noexcept;
+    [[nodiscard]] bool canBeBorrowed() const noexcept;
+    [[nodiscard]] bool checkout() noexcept;
+    [[nodiscard]] bool checkin() noexcept;
 
-    bool isValid() const;
-    bool borrowBook();
-    bool returnBook();
-    void displayInfo() const;
+private:
+    Id id_;
+    std::string title_;
+    std::string author_;
+    int year_;
+    int totalCopies_;
+    int availableCopies_;
 };

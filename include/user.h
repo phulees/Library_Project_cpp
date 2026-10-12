@@ -1,31 +1,36 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
-#include <vector>
+#include <unordered_set>
 
-class User
+class Library;
+
+class User final
 {
-private:
-    int userId;
-    std::string name;
-    std::string phoneNumber;
-    std::string email;
-    std::vector<int> borrowedBookIds;
-    static const std::size_t MAX_BORROWED_BOOKS = 5;
-
 public:
-    User(int userId = 0, const std::string& name = "",
-         const std::string& phoneNumber = "", const std::string& email = "");
+    using Id = int;
+    static constexpr std::size_t maxBorrowedBooks = 5;
 
-    int getUserId() const;
-    const std::string& getName() const;
-    const std::string& getPhoneNumber() const;
-    const std::string& getEmail() const;
-    const std::vector<int>& getBorrowedBookIds() const;
+    User(Id id, std::string name, std::string phoneNumber = {},
+         std::string email = {});
 
-    bool isValid() const;
-    bool canBorrowBook(int bookId) const;
-    bool borrowBook(int bookId);
-    bool returnBook(int bookId);
-    void displayInfo() const;
+    [[nodiscard]] Id id() const noexcept;
+    [[nodiscard]] const std::string& name() const noexcept;
+    [[nodiscard]] const std::string& phoneNumber() const noexcept;
+    [[nodiscard]] const std::string& email() const noexcept;
+    [[nodiscard]] const std::unordered_set<int>& borrowedBookIds() const noexcept;
+    [[nodiscard]] bool hasBorrowedBook(int bookId) const noexcept;
+    [[nodiscard]] bool canBorrowBook(int bookId) const noexcept;
+
+private:
+    friend class Library;
+    [[nodiscard]] bool recordBorrow(int bookId);
+    [[nodiscard]] bool recordReturn(int bookId) noexcept;
+
+    Id id_;
+    std::string name_;
+    std::string phoneNumber_;
+    std::string email_;
+    std::unordered_set<int> borrowedBookIds_;
 };
