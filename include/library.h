@@ -1,29 +1,30 @@
 #pragma once
-
 #include "book.h"
 #include "user.h"
-
-#include <string>
+#include <filesystem>
+#include <functional>
+#include <optional>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
-class Library
-{
-private:
-    std::vector<Book> books;
-    std::vector<User> users;
-
-    Book* findBookById(int bookId);
-    const Book* findBookById(int bookId) const;
-    User* findUserById(int userId);
-    const User* findUserById(int userId) const;
-
+class Library final {
 public:
-    bool addBook(const Book& book);
-    bool addUser(const User& user);
-    bool borrowBook(int userId, int bookId);
-    bool returnBook(int userId, int bookId);
-
-    void displayAllBooks() const;
-    void displayAllUsers() const;
-    void displayBooksByTitle(const std::string& keyword) const;
+    using BookReference = std::reference_wrapper<const Book>;
+    using UserReference = std::reference_wrapper<const User>;
+    [[nodiscard]] bool addBook(Book book);
+    [[nodiscard]] bool addUser(User user);
+    [[nodiscard]] bool borrowBook(User::Id userId, Book::Id bookId);
+    [[nodiscard]] bool returnBook(User::Id userId, Book::Id bookId);
+    [[nodiscard]] std::optional<BookReference> findBook(Book::Id id) const noexcept;
+    [[nodiscard]] std::optional<UserReference> findUser(User::Id id) const noexcept;
+    [[nodiscard]] std::vector<BookReference> allBooks() const;
+    [[nodiscard]] std::vector<UserReference> allUsers() const;
+    [[nodiscard]] std::vector<BookReference> searchBooks(std::string_view keyword) const;
+    void saveToFile(const std::filesystem::path& path) const;
+    [[nodiscard]] static Library loadFromFile(const std::filesystem::path& path);
+    [[nodiscard]] bool validateInvariants() const;
+private:
+    std::unordered_map<Book::Id, Book> books_;
+    std::unordered_map<User::Id, User> users_;
 };
