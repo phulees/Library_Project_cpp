@@ -7,16 +7,10 @@ Book::Book()
 
 Book::Book(int id, const std::string& title, const std::string& author,
            int year, int totalCopies, int availableCopies)
-    : id(id),
-      title(title),
-      author(author),
-      year(year),
-      totalCopies(totalCopies),
-      availableCopies(availableCopies)
+    : id(id), title(title), author(author), year(year),
+      totalCopies(totalCopies), availableCopies(availableCopies)
 {
 }
-
-Book::~Book() = default;
 
 int Book::getId() const { return id; }
 const std::string& Book::getTitle() const { return title; }
@@ -48,45 +42,52 @@ bool Book::setAuthor(const std::string& author)
 
 bool Book::setYear(int year)
 {
-    if (year <= 1000) return false; // Làm j có thư viện nào lưu sách sx năm 1000 đâu đk=))
+    if (year < 1000) return false;
     this->year = year;
     return true;
 }
 
 bool Book::setTotalCopies(int totalCopies)
 {
-    if (totalCopies <= 0) return false;
+    if (totalCopies < 1 || totalCopies < availableCopies) return false;
     this->totalCopies = totalCopies;
     return true;
 }
 
 bool Book::setAvailableCopies(int availableCopies)
 {
-    if (availableCopies < 0) return false;
+    if (availableCopies < 0 || availableCopies > totalCopies) return false;
     this->availableCopies = availableCopies;
     return true;
 }
 
-bool Book::borrowBook() {
-    if (getAvailableCopies() <= 0) return false;
-    availableCopies--;
+bool Book::isValid() const
+{
+    return id > 0 && !title.empty() && !author.empty() &&
+           year >= 1000 && totalCopies > 0 &&
+           availableCopies >= 0 && availableCopies <= totalCopies;
+}
+
+bool Book::borrowBook()
+{
+    if (availableCopies <= 0) return false;
+    --availableCopies;
     return true;
 }
 
-bool Book::returnBook() {
-    if (getAvailableCopies() < getTotalCopies()) {
-        availableCopies++;
-        return true;
-    }
-    return false;
+bool Book::returnBook()
+{
+    if (availableCopies >= totalCopies) return false;
+    ++availableCopies;
+    return true;
 }
 
 void Book::displayInfo() const
 {
-    std::cout << "ID: " << id << '\n'
-              << "Title: " << title << '\n'
-              << "Author: " << author << '\n'
-              << "Year: " << year << '\n'
-              << "Total copies: " << totalCopies << '\n'
-              << "Available copies: " << availableCopies << '\n';
+    std::cout << "Ma sach: " << id << '\n'
+              << "Ten sach: " << title << '\n'
+              << "Tac gia: " << author << '\n'
+              << "Nam xuat ban: " << year << '\n'
+              << "Tong so ban: " << totalCopies << '\n'
+              << "So ban con: " << availableCopies << '\n';
 }
